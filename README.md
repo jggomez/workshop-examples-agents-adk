@@ -5,11 +5,44 @@ A professional multi-agent investment analysis platform built with [Google ADK](
 ## Architecture
 
 ```mermaid
-graph TD
-    User((User)) --> Supervisor[Supervisor Orchestrator]
-    Supervisor -- A2A --> Crypto[Crypto Specialist]
-    Supervisor -- A2A --> Risk[Risk Analyst]
-    Crypto -- MCP --> CoinGecko[(CoinGecko API)]
+graph TB
+    subgraph Client_Layer [User Interface]
+        User((User))
+    end
+
+    subgraph Orchestration_Layer [Orchestration]
+        Supervisor[Supervisor Agent]
+    end
+
+    subgraph Specialist_Layer [Specialized Agents]
+        Crypto[Crypto Specialist]
+        Risk[Risk Analyst]
+    end
+
+    subgraph Data_Layer [Data & Tools]
+        MCPServer[MCP Server]
+        CoinGecko[(CoinGecko API)]
+    end
+
+    subgraph Platform_Layer [Shared Services]
+        MemoryBank[(Vertex AI Memory Bank / In-Memory)]
+        Observability[[Lifecycle Callbacks & Logging]]
+    end
+
+    User -->|Web UI / API| Supervisor
+    Supervisor -->|A2A Protocol| Crypto
+    Supervisor -->|A2A Protocol| Risk
+    Crypto -->|MCP / Streamable HTTP| MCPServer
+    MCPServer -->|HTTPS| CoinGecko
+
+    %% Shared Platform Connections
+    Supervisor -.-> MemoryBank
+    Crypto -.-> MemoryBank
+    Risk -.-> MemoryBank
+
+    Supervisor -.-> Observability
+    Crypto -.-> Observability
+    Risk -.-> Observability
 ```
 
 ## Quick Start
