@@ -23,3 +23,16 @@ Each agent is a self-contained Python project with its own:
 - `cloudbuild.yaml` (CI/CD)
 
 This allows you to update or scale individual agents without affecting the rest of the system.
+
+## Common Implementation Features
+
+### Hybrid Memory System
+All agents in the ecosystem support a hybrid memory management strategy:
+- **Persistence:** Uses `VertexAiMemoryBankService` for persistent, cross-session memory in production environments.
+- **Development:** Falls back to `InMemoryMemoryService` for local development.
+- **Auto-Config:** Selection is automatically handled based on the environment variables `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and `AGENT_ENGINE_ID`.
+
+### Lifecycle Callbacks
+Standardized callbacks are used across the system for performance and logging:
+- **Agent Monitoring:** `before_agent_callback` and `after_agent_callback` are used for performance monitoring and latency measurement.
+- **Tool Interception:** Specialist agents leverage `before_tool_callback` (via `on_tool_call`) to intercept and log tool executions and their computed arguments.

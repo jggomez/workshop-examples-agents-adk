@@ -2,7 +2,7 @@
 
 A professional multi-agent investment analysis platform built with [Google ADK](https://adk.dev), using the **Agent-to-Agent (A2A)** protocol and **Model Context Protocol (MCP)**.
 
-## 🏗 Architecture
+## Architecture
 
 ```mermaid
 graph TD
@@ -12,7 +12,7 @@ graph TD
     Crypto -- MCP --> CoinGecko[(CoinGecko API)]
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Local Execution (Full Stack)
 The easiest way to run the entire system locally is using the provided automation script:
@@ -34,7 +34,7 @@ export GOOGLE_API_KEY="your-gemini-api-key"
 ./deploy.sh
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
@@ -44,12 +44,28 @@ export GOOGLE_API_KEY="your-gemini-api-key"
 | **Risk Agent** | `agents/risk-analyst` | Specialist for quantitative risk scoring. |
 | **MCP Server** | `mcp-server` | External tool bridge for CoinGecko. |
 
-## 🛠 Tech Stack
+## Tech Stack
 - **Framework:** Google ADK (Agent Development Kit) 2.0
 - **Communication:** A2A (Agent-to-Agent) & MCP (Model Context Protocol)
 - **Deployment:** Docker + Google Cloud Run + Cloud Build
 - **Language:** Python 3.14 + uv
 
-## 📝 Documentation
+## Technical Implementation Details
+
+### Callbacks
+The system utilizes lifecycle callbacks for robust operation and observability:
+- **Performance Monitoring:** Agents implement `before_agent_callback` and `after_agent_callback` to measure latency and monitor execution performance across the chain.
+- **Tool Interception:** Specialist agents use `before_tool_callback` (specifically `on_tool_call`) to intercept and log tool executions along with their computed arguments.
+
+### Memory Management
+Agents employ a hybrid memory system to balance persistence and local development needs:
+- **Services:** Supports `VertexAiMemoryBankService` for persistent, cross-session memory and `InMemoryMemoryService` as a fallback for local environments.
+- **Automatic Selection:** The system automatically selects the appropriate service based on the presence of `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and `AGENT_ENGINE_ID` environment variables.
+
+### Communication Protocols
+- **Agent-to-Agent (A2A):** Used for seamless orchestration between the Supervisor and specialist agents.
+- **Model Context Protocol (MCP):** Leverages `StreamableHTTPConnectionParams` for efficient external tool integration, specifically for the CoinGecko market data bridge.
+
+## Documentation
 - **[Agents Deep Dive](./agents/README.md)**: Details on agent logic and inter-agent communication.
 - **[Design Spec](./docs/spec.md)**: Original architectural requirements.
