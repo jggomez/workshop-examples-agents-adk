@@ -1,0 +1,15 @@
+[project]
+name = "crypto-specialist"
+version = "0.1.0"
+description = "A2A Agent: Real-time cryptocurrency market data specialist"
+requires-python = ">=3.12"
+dependencies = [
+    "google-adk[a2a,mcp]>=2.0.0",
+    "a2a-sdk[http-server]",
+    "google-genai>=0.1.0",
+    "uvicorn>=0.30.0",
+    "google-cloud-aiplatform>=1.38.0",
+]
+
+[tool.uv]
+package = false

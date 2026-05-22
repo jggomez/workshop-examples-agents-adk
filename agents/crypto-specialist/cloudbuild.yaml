@@ -1,0 +1,47 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '$_AR_REPO/$_SERVICE_NAME:latest'
+      - '.'
+
+  # Step 2: Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '$_AR_REPO/$_SERVICE_NAME:latest'
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_AR_REPO/$_SERVICE_NAME:latest'
+      - '--region'
+      - '$_DEPLOY_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'MCP_SERVER_URL=$_MCP_SERVER_URL,GOOGLE_API_KEY=$_GOOGLE_API_KEY,GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_LOCATION=$_DEPLOY_REGION,AGENT_ENGINE_ID=$_AGENT_ENGINE_ID'
+
+images:
+  - '$_AR_REPO/$_SERVICE_NAME:latest'
+
+substitutions:
+  _AR_REPO: 'us-central1-docker.pkg.dev/${PROJECT_ID}/agents-repo'
+  _SERVICE_NAME: 'crypto-specialist'
+  _DEPLOY_REGION: 'us-central1'
+  _MCP_SERVER_URL: 'https://system-crypto-mcp-server-823002731253.us-central1.run.app/mcp'
+  _GOOGLE_API_KEY: 'CHANGE_ME'
+  _AGENT_ENGINE_ID: 'agents-crypto'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
